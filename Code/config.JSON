@@ -15,5 +15,7 @@
   "min_freq_cutoff": 2,
   "quantile_cutoff_for_positive": 0.6,
   "quantile_cutoff_for_unlabel": 0.4,
-  "embed_dim": 64
+  "embed_dim": 64,
+  "use_hict": true,
+  "hict_path": "path/to/hict/checkpoint"
 }

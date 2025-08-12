@@ -531,6 +531,8 @@ model_name = 'model.chkpt'
 current_time = datetime.datetime.now()
 task_mode = 'class'
 
+use_hict = config['use_hict']
+hict_path = config['hict_path']
 
 
 neighbor_mask = []
@@ -620,7 +622,10 @@ classifier_model = Classifier(
 	node_embedding=node_embedding,
 	diag_mask=True,
 	bottle_neck=bottle_neck,
-	attribute_dict=attribute_dict).to(device)
+	attribute_dict=attribute_dict,
+	use_hict=use_hict,
+	hict_path=hict_path
+).to(device)
 
 save_embeddings(classifier_model, True)
 

@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from utils import *
 import scipy
+from digtalcell.tasks.hyperedge.hyper_model import HyperedgeModel
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -212,11 +213,19 @@ class Classifier(nn.Module):
 			diag_mask,
 			bottle_neck,
 			attribute_dict=None,
+			use_hict: bool = False,
+			hict_path: str | None = None,
 			**args):
 		super().__init__()
 		
 		self.pff_classifier = PositionwiseFeedForward([d_model, 1], reshape=True, use_bias=True)
-		
+
+		self.use_hict = use_hict
+		if use_hict and hict_path is None:
+			raise ValueError("The argument use_hict is True, but the checkpoint path hict_path is not provided")
+		if hict_path is not None:
+			self.hict = HyperedgeModel(hict_path).to(device)
+
 		self.node_embedding = node_embedding
 		self.encode1 = EncoderLayer(
 			n_head,
@@ -260,6 +269,10 @@ class Classifier(nn.Module):
 	
 	def get_embedding(self, x, slf_attn_mask, non_pad_mask, return_recon=False):
 		sz_b, len_seq = x.shape
+
+		if self.use_hict:
+			hict_embedding = self.hict(x)
+
 		attribute_embed = self.attribute_dict(x.view(-1))
 		attribute_embed = self.attribute_nn(attribute_embed).view(sz_b, len_seq, -1)
 		if return_recon:
@@ -270,6 +283,10 @@ class Classifier(nn.Module):
 		x = activation(self.next_w(x))
 		dynamic, static, attn = self.encode1(x, x, slf_attn_mask, non_pad_mask)
 		# dynamic, static1, attn = self.encode2(dynamic, static,slf_attn_mask, non_pad_mask)
+
+		if self.use_hict:
+			dynamic = hict_embedding
+
 		if return_recon:
 			return dynamic, static, attn, recon_loss
 		else:
