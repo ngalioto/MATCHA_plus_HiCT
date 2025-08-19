@@ -90,13 +90,13 @@ for k in k_list:
 	for datum in tqdm(data):
 		if (len(datum) >= size) & (len(datum) <= max_size):
 			new_data.append(np.array(datum))
-	new_data = np.array(new_data)
+	new_data = np.array(new_data, dtype=object) # converting ragged list to dtype object
 	node2usefulindex = [[] for i in range(node_num)]
 	for i, datum in enumerate(tqdm(new_data)):
 		for n in datum:
 			node2usefulindex[n].append(i)
-	node2usefulindex = np.array(node2usefulindex)
-	
+	node2usefulindex = np.array(node2usefulindex, dtype=object) # converting ragged list to dtype object
+
 	process_list = []
 	list1 = []
 	list1_freq = []

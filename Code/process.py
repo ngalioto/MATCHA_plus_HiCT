@@ -5,6 +5,7 @@ from tqdm import tqdm, trange
 import sys, os
 from utils import *
 import h5py
+from digitalcell.data.constants import REF_DIR
 
 
 def build_node_dict():
@@ -84,7 +85,7 @@ def parse_file():
 		
 		line = file1.readline()
 
-	np.save(os.path.join(temp_dir, "edge_list.npy"), final)
+	np.save(os.path.join(temp_dir, "edge_list.npy"), np.array(final, dtype=object)) # converting ragged list to dtype object
 	
 
 def edgelist2adj():
@@ -232,7 +233,7 @@ chrom_list = config['chrom_list']
 temp_dir = config['temp_dir']
 cluster_path = config['cluster_path']
 mcool_path = config['mcool_path']
-chrom_size = config['chrom_size']
+chrom_size = os.path.join(REF_DIR, config['chrom_size'])
 max_cluster_size = config['max_cluster_size']
 if not os.path.exists(temp_dir):
 	os.mkdir(temp_dir)
