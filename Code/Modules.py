@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from utils import *
 import scipy
-from digtalcell.tasks.hyperedge.hyper_model import HyperedgeModel
+from digitalcell.tasks.hyperedge.hyper_model import HyperedgeModel
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -221,10 +221,11 @@ class Classifier(nn.Module):
 		self.pff_classifier = PositionwiseFeedForward([d_model, 1], reshape=True, use_bias=True)
 
 		self.use_hict = use_hict
-		if use_hict and hict_path is None:
-			raise ValueError("The argument use_hict is True, but the checkpoint path hict_path is not provided")
-		if hict_path is not None:
-			self.hict = HyperedgeModel(hict_path).to(device)
+		if use_hict:
+			if hict_path is not None:
+				self.hict = HyperedgeModel(hict_path).to(device)
+			else:
+				raise ValueError("The argument use_hict is True, but the checkpoint path hict_path is not provided")
 
 		self.node_embedding = node_embedding
 		self.encode1 = EncoderLayer(
@@ -695,7 +696,7 @@ class DataGenerator():
 				edges, edge_weight =  np.concatenate([edges, self.edges[i][index]]), np.concatenate([edge_weight, self.edge_weight[i][index]])
 				return_edges += list(edges)
 				return_edge_weight += list(edge_weight)
-		return np.asarray(return_edges), np.asarray(return_edge_weight)
+		return np.asarray(return_edges, dtype=object), np.asarray(return_edge_weight) # converting ragged list to dtype object
 	
 	def balance_num(self, edges):
 		cell = edges[:, 0]

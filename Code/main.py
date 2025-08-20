@@ -564,7 +564,7 @@ for size in size_list:
 		data_list.append(datum)
 	weight_list.append(weight)
 
-data = np.array(data_list)
+data = np.array(data_list, dtype=object) # converting ragged list to dtype object
 weight = np.concatenate(weight_list,axis = 0)
 
 
@@ -663,8 +663,8 @@ for size in size_list:
 	for datum in data:
 		data_list.append(datum)
 	weight_list.append(weight)
-	
-dict_data = np.array(data_list)
+
+dict_data = np.array(data_list, dtype=object) # converting ragged list to dtype object
 
 test_dict = build_hash(dict_data, compress=compress, max_size=max_size,
 								 min_size=min_size)

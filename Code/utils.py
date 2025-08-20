@@ -22,7 +22,7 @@ def add_padding_idx(vec):
 
 
 def np2tensor_hyper(vec, dtype):
-	vec = np.asarray(vec)
+	vec = np.asarray(vec, dtype=object) # converting ragged list to dtype object
 	if len(vec.shape) == 1:
 		return [torch.as_tensor(v, dtype=dtype) for v in vec]
 	else:
